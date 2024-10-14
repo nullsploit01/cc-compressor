@@ -3,6 +3,7 @@ package internal
 import (
 	"bufio"
 	"os"
+	"path/filepath"
 )
 
 type Compressor struct {
@@ -12,6 +13,7 @@ type Compressor struct {
 
 func Compress(file *os.File) error {
 	compressor := &Compressor{
+		Filename:       filepath.Base(file.Name()),
 		FrequencyTable: make(map[string]uint64),
 	}
 
