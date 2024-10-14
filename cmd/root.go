@@ -34,7 +34,11 @@ It’s a reliable method for reducing text file sizes.`,
 		defer file.Close()
 
 		if compressFile {
-			internal.Compress(file)
+			err := internal.Compress(file)
+			if err != nil {
+				cmd.PrintErrln("error occured while compressing file", err)
+				os.Exit(1)
+			}
 		}
 
 	},

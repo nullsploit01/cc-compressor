@@ -2,7 +2,6 @@ package internal
 
 import (
 	"bufio"
-	"log"
 	"os"
 )
 
@@ -11,19 +10,32 @@ type Compressor struct {
 	FrequencyTable map[string]uint64
 }
 
-func Compress(file *os.File) {
+func Compress(file *os.File) error {
+	compressor := &Compressor{
+		FrequencyTable: make(map[string]uint64),
+	}
+
+	err := compressor.GenerateFrequencyTable(file)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Compressor) GenerateFrequencyTable(file *os.File) error {
 	defer file.Seek(0, 0)
 
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanRunes)
 
-	compressor := &Compressor{
-		FrequencyTable: make(map[string]uint64),
-	}
-
 	for scanner.Scan() {
-		compressor.FrequencyTable[scanner.Text()] += 1
+		c.FrequencyTable[scanner.Text()] += 1
 	}
 
-	log.Println(compressor.FrequencyTable)
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	return nil
 }
