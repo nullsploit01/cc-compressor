@@ -2,8 +2,10 @@ package internal
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type Compressor struct {
@@ -12,6 +14,7 @@ type Compressor struct {
 }
 
 func Compress(file *os.File) error {
+	currTime := time.Now()
 	compressor := &Compressor{
 		Filename:       filepath.Base(file.Name()),
 		FrequencyTable: make(map[string]uint64),
@@ -21,6 +24,8 @@ func Compress(file *os.File) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("finished compressing file %s in %f seconds\n", compressor.Filename, time.Since(currTime).Seconds())
 
 	return nil
 }
