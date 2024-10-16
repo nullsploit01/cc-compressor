@@ -60,3 +60,16 @@ func BuildHuffmanTree(frequencies map[string]uint64) *HuffmanNode {
 
 	return heap.Pop(h).(*HuffmanNode)
 }
+
+func GenerateHuffmanCodes(node *HuffmanNode, code string, codes map[string]string) {
+	if node == nil {
+		return
+	}
+
+	if node.Right == nil && node.Left == nil {
+		codes[node.Character] = code
+	}
+
+	GenerateHuffmanCodes(node.Right, code+"1", codes)
+	GenerateHuffmanCodes(node.Left, code+"0", codes)
+}

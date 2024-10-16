@@ -25,7 +25,9 @@ func Compress(file *os.File) error {
 		return err
 	}
 
-	BuildHuffmanTree(compressor.FrequencyTable)
+	root := BuildHuffmanTree(compressor.FrequencyTable)
+	huffmanCodes := make(map[string]string)
+	GenerateHuffmanCodes(root, "", huffmanCodes)
 
 	fmt.Printf("finished compressing file %s in %f seconds\n", compressor.Filename, time.Since(currTime).Seconds())
 
