@@ -1,7 +1,10 @@
 package internal
 
 import (
+	"bufio"
 	"container/heap"
+	"fmt"
+	"strings"
 )
 
 type HuffmanNode struct {
@@ -70,6 +73,53 @@ func GenerateHuffmanCodes(node *HuffmanNode, code string, codes map[string]strin
 		codes[node.Character] = code
 	}
 
-	GenerateHuffmanCodes(node.Right, code+"1", codes)
 	GenerateHuffmanCodes(node.Left, code+"0", codes)
+	GenerateHuffmanCodes(node.Right, code+"1", codes)
+}
+
+func SerializeHuffmanTree(node *HuffmanNode, builder *strings.Builder) {
+	if node == nil {
+		return
+	}
+
+	if node.Left == nil && node.Right == nil {
+		builder.WriteString("0")
+		builder.WriteString(node.Character)
+	} else {
+		builder.WriteString("1")
+	}
+
+	SerializeHuffmanTree(node.Left, builder)
+	SerializeHuffmanTree(node.Right, builder)
+}
+
+func DeserializeHuffmanTree(reader *bufio.Reader) (*HuffmanNode, error) {
+	char, err := reader.ReadByte()
+	if err != nil {
+		return nil, err
+	}
+
+	if char == '0' {
+		leafChar, err := reader.ReadByte()
+		if err != nil {
+			return nil, err
+		}
+		return &HuffmanNode{Character: string(leafChar)}, nil
+	}
+
+	if char == '1' {
+		left, err := DeserializeHuffmanTree(reader)
+		if err != nil {
+			return nil, err
+		}
+
+		right, err := DeserializeHuffmanTree(reader)
+		if err != nil {
+			return nil, err
+		}
+
+		return &HuffmanNode{Left: left, Right: right}, nil
+	}
+
+	return nil, fmt.Errorf("invalid character encountered during deserialization: %c", char)
 }

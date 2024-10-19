@@ -42,7 +42,7 @@ func Compress(file *os.File, outputFileName string) error {
 
 	defer outputFile.Close()
 
-	err = compressor.WriteHeader(outputFile)
+	err = compressor.WriteHeader(outputFile, root)
 	if err != nil {
 		return err
 	}
@@ -74,29 +74,27 @@ func (c *Compressor) GenerateFrequencyTable(file *os.File) error {
 	return nil
 }
 
-func (c *Compressor) WriteHeader(outputFile *os.File) error {
+func (c *Compressor) WriteHeader(outputFile *os.File, root *HuffmanNode) error {
 	_, err := outputFile.Write([]byte("1337")) // magic number
 	if err != nil {
 		return err
 	}
 
-	numberOfChars := len(c.FrequencyTable)
-	err = binary.Write(outputFile, binary.LittleEndian, uint32(numberOfChars))
+	var treeBuilder strings.Builder
+	SerializeHuffmanTree(root, &treeBuilder)
+	treeData := treeBuilder.String()
+
+	treeLength := uint32(len(treeData))
+	err = binary.Write(outputFile, binary.LittleEndian, treeLength)
 	if err != nil {
 		return err
 	}
 
-	for char, freq := range c.FrequencyTable {
-		_, err := outputFile.Write([]byte(char))
-		if err != nil {
-			return err
-		}
-
-		err = binary.Write(outputFile, binary.LittleEndian, freq)
-		if err != nil {
-			return err
-		}
+	_, err = outputFile.WriteString(treeData)
+	if err != nil {
+		return err
 	}
+
 	return nil
 }
 
@@ -142,6 +140,7 @@ func (c *Compressor) ConvertBitsToBytes(bitString string) ([]byte, error) {
 				byteVal |= 1
 			}
 		}
+
 		byteData = append(byteData, byteVal)
 	}
 	return byteData, nil

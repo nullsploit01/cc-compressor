@@ -43,6 +43,14 @@ It’s a reliable method for reducing text file sizes.`,
 			}
 		}
 
+		if deCompressFile {
+			err := internal.Decompress(file, outputFileName)
+			if err != nil {
+				cmd.PrintErrln("error occured while decompressing file", err)
+				os.Exit(1)
+			}
+		}
+
 	},
 }
 
@@ -56,5 +64,5 @@ func Execute() {
 func init() {
 	rootCmd.Flags().BoolVarP(&compressFile, "compress", "c", false, "Compress text file")
 	rootCmd.Flags().BoolVarP(&deCompressFile, "decompress", "d", false, "Decompress text file")
-	rootCmd.Flags().StringVarP(&outputFileName, "output", "o", "output.huff", "Output file name for compression")
+	rootCmd.Flags().StringVarP(&outputFileName, "output", "o", "", "Output file name for compression")
 }
