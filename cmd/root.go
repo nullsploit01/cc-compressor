@@ -8,6 +8,7 @@ import (
 )
 
 var compressFile bool
+var deCompressFile bool
 
 var rootCmd = &cobra.Command{
 	Use:   "cccmp [flags] [file]",
@@ -53,4 +54,5 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolVarP(&compressFile, "compress", "c", false, "Compress text file")
+	rootCmd.Flags().BoolVarP(&deCompressFile, "decompress", "d", false, "Decompress text file")
 }

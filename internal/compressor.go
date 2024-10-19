@@ -48,7 +48,7 @@ func Compress(file *os.File) error {
 		return err
 	}
 
-	fmt.Printf("finished compressing file %s in %f seconds\n. saved as compressed_%s", compressor.Filename, time.Since(currTime).Seconds(), compressor.Filename)
+	fmt.Printf("finished compressing file %s in %f seconds. saved as compressed_%s\n", compressor.Filename, time.Since(currTime).Seconds(), compressor.Filename)
 
 	return nil
 }
