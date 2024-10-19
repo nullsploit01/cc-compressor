@@ -26,7 +26,7 @@ func TestGenerateFrequencyTable(t *testing.T) {
 
 	compressor := &internal.Compressor{
 		Filename:       filepath.Base(tempFile.Name()),
-		FrequencyTable: make(map[string]uint64),
+		FrequencyTable: make(map[rune]uint64),
 	}
 
 	err = compressor.GenerateFrequencyTable(tempFile)
@@ -45,9 +45,11 @@ func TestGenerateFrequencyTable(t *testing.T) {
 		"d": 1,
 	}
 
-	for char, expectedCount := range expectedFreq {
+	runeExpectedFreq := convertStringToRuneMap(expectedFreq)
+
+	for char, expectedCount := range runeExpectedFreq {
 		if compressor.FrequencyTable[char] != expectedCount {
-			t.Errorf("Expected frequency of '%s' to be %d, got %d", char, expectedCount, compressor.FrequencyTable[char])
+			t.Errorf("Expected frequency of '%v' to be %d, got %d", char, expectedCount, compressor.FrequencyTable[char])
 		}
 	}
 }
