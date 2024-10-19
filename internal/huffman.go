@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"container/heap"
 	"fmt"
+	"unicode/utf8"
 )
 
 type HuffmanNode struct {
-	Character string
+	Character rune
 	Frequency uint64
 	Left      *HuffmanNode
 	Right     *HuffmanNode
@@ -40,7 +41,7 @@ func (h *HuffmanHeap) Pop() interface{} {
 	return x
 }
 
-func BuildHuffmanTree(frequencies map[string]uint64) *HuffmanNode {
+func BuildHuffmanTree(frequencies map[rune]uint64) *HuffmanNode {
 	h := &HuffmanHeap{}
 	heap.Init(h)
 
@@ -63,7 +64,7 @@ func BuildHuffmanTree(frequencies map[string]uint64) *HuffmanNode {
 	return heap.Pop(h).(*HuffmanNode)
 }
 
-func GenerateHuffmanCodes(node *HuffmanNode, code string, codes map[string]string) {
+func GenerateHuffmanCodes(node *HuffmanNode, code string, codes map[rune]string) {
 	if node == nil {
 		return
 	}
@@ -83,7 +84,11 @@ func SerializeHuffmanTree(node *HuffmanNode, builder *[]byte) {
 
 	if node.Left == nil && node.Right == nil {
 		*builder = append(*builder, '0')
-		*builder = append(*builder, node.Character[0]) // Ensure it's one byte
+		runeBytes := make([]byte, utf8.RuneLen(rune(node.Character)))
+		utf8.EncodeRune(runeBytes, rune(node.Character))
+
+		// Append the encoded rune bytes
+		*builder = append(*builder, runeBytes...)
 	} else {
 		*builder = append(*builder, '1')
 	}
@@ -99,11 +104,11 @@ func DeserializeHuffmanTree(reader *bufio.Reader) (*HuffmanNode, error) {
 	}
 
 	if char == '0' {
-		leafChar, err := reader.ReadByte()
+		leafChar, _, err := reader.ReadRune()
 		if err != nil {
 			return nil, err
 		}
-		return &HuffmanNode{Character: string(leafChar)}, nil
+		return &HuffmanNode{Character: leafChar}, nil
 	}
 
 	if char == '1' {

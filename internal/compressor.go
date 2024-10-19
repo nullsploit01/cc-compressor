@@ -12,14 +12,14 @@ import (
 
 type Compressor struct {
 	Filename       string
-	FrequencyTable map[string]uint64
+	FrequencyTable map[rune]uint64
 }
 
 func Compress(file *os.File, outputFileName string) error {
 	currTime := time.Now()
 	compressor := &Compressor{
 		Filename:       filepath.Base(file.Name()),
-		FrequencyTable: make(map[string]uint64),
+		FrequencyTable: make(map[rune]uint64),
 	}
 
 	if outputFileName == "" {
@@ -32,7 +32,7 @@ func Compress(file *os.File, outputFileName string) error {
 	}
 
 	root := BuildHuffmanTree(compressor.FrequencyTable)
-	huffmanCodes := make(map[string]string)
+	huffmanCodes := make(map[rune]string)
 	GenerateHuffmanCodes(root, "", huffmanCodes)
 
 	outputFile, err := os.Create(outputFileName)
@@ -64,7 +64,8 @@ func (c *Compressor) GenerateFrequencyTable(file *os.File) error {
 	scanner.Split(bufio.ScanRunes)
 
 	for scanner.Scan() {
-		c.FrequencyTable[scanner.Text()] += 1
+		char := []rune(scanner.Text())[0]
+		c.FrequencyTable[char] += 1
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -97,7 +98,7 @@ func (c *Compressor) WriteHeader(outputFile *os.File, root *HuffmanNode) error {
 	return nil
 }
 
-func (c *Compressor) WriteEncodedData(inputFile *os.File, huffmanCodes map[string]string, outputFile *os.File) error {
+func (c *Compressor) WriteEncodedData(inputFile *os.File, huffmanCodes map[rune]string, outputFile *os.File) error {
 	defer inputFile.Seek(0, 0)
 
 	var bitBuffer strings.Builder
@@ -106,7 +107,7 @@ func (c *Compressor) WriteEncodedData(inputFile *os.File, huffmanCodes map[strin
 	scanner.Split(bufio.ScanRunes)
 
 	for scanner.Scan() {
-		char := scanner.Text()
+		char := []rune(scanner.Text())[0]
 		code := huffmanCodes[char]
 		bitBuffer.WriteString(code)
 	}

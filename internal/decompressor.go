@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode/utf8"
 )
 
 type DeCompressor struct {
@@ -128,8 +129,10 @@ func (d *DeCompressor) DecodeHuffmanData(inputFile *bufio.Reader, huffmanRoot *H
 			}
 
 			if currentNode.Left == nil && currentNode.Right == nil {
-				decodedData = append(decodedData, currentNode.Character[0])
-				currentNode = huffmanRoot // Reset to the root for the next character
+				var buf [utf8.UTFMax]byte
+				n := utf8.EncodeRune(buf[:], currentNode.Character)
+				decodedData = append(decodedData, buf[:n]...)
+				currentNode = huffmanRoot
 			}
 		}
 	}
