@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"container/heap"
 	"fmt"
+	"io"
 	"unicode/utf8"
 )
 
@@ -101,6 +102,10 @@ func DeserializeHuffmanTree(reader *bufio.Reader) (*HuffmanNode, error) {
 	char, err := reader.ReadByte()
 	if err != nil {
 		return nil, err
+	}
+
+	if err == io.EOF {
+		return nil, nil
 	}
 
 	if char == '0' {

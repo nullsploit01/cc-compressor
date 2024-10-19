@@ -17,6 +17,7 @@ type DeCompressor struct {
 }
 
 func Decompress(file *os.File, outputFileName string) error {
+	file.Seek(0, 0)
 	decompressor := &DeCompressor{
 		Filename: filepath.Base(file.Name()),
 	}
@@ -76,7 +77,7 @@ func Decompress(file *os.File, outputFileName string) error {
 }
 
 func (d *DeCompressor) ReadFrequencyTable(file *os.File) (map[string]uint64, error) {
-	defer file.Seek(0, 0)
+	file.Seek(0, 0)
 	var numberOfChars uint32
 
 	err := binary.Read(file, binary.LittleEndian, &numberOfChars)
