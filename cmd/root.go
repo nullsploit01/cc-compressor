@@ -9,6 +9,7 @@ import (
 
 var compressFile bool
 var deCompressFile bool
+var outputFileName string
 
 var rootCmd = &cobra.Command{
 	Use:   "cccmp [flags] [file]",
@@ -35,7 +36,7 @@ It’s a reliable method for reducing text file sizes.`,
 		defer file.Close()
 
 		if compressFile {
-			err := internal.Compress(file)
+			err := internal.Compress(file, outputFileName)
 			if err != nil {
 				cmd.PrintErrln("error occured while compressing file", err)
 				os.Exit(1)
@@ -55,4 +56,5 @@ func Execute() {
 func init() {
 	rootCmd.Flags().BoolVarP(&compressFile, "compress", "c", false, "Compress text file")
 	rootCmd.Flags().BoolVarP(&deCompressFile, "decompress", "d", false, "Decompress text file")
+	rootCmd.Flags().StringVarP(&outputFileName, "output", "o", "output.huff", "Output file name for compression")
 }

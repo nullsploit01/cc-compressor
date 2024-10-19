@@ -15,11 +15,15 @@ type Compressor struct {
 	FrequencyTable map[string]uint64
 }
 
-func Compress(file *os.File) error {
+func Compress(file *os.File, outputFileName string) error {
 	currTime := time.Now()
 	compressor := &Compressor{
 		Filename:       filepath.Base(file.Name()),
 		FrequencyTable: make(map[string]uint64),
+	}
+
+	if outputFileName == "" {
+		outputFileName = fmt.Sprintf("compressed_%s", compressor.Filename)
 	}
 
 	err := compressor.GenerateFrequencyTable(file)
@@ -31,7 +35,7 @@ func Compress(file *os.File) error {
 	huffmanCodes := make(map[string]string)
 	GenerateHuffmanCodes(root, "", huffmanCodes)
 
-	outputFile, err := os.Create(fmt.Sprintf("compressed_%s", compressor.Filename))
+	outputFile, err := os.Create(outputFileName)
 	if err != nil {
 		return err
 	}
@@ -48,7 +52,7 @@ func Compress(file *os.File) error {
 		return err
 	}
 
-	fmt.Printf("finished compressing file %s in %f seconds. saved as compressed_%s\n", compressor.Filename, time.Since(currTime).Seconds(), compressor.Filename)
+	fmt.Printf("finished compressing file %s in %f seconds. saved as %s\n", compressor.Filename, time.Since(currTime).Seconds(), outputFileName)
 
 	return nil
 }

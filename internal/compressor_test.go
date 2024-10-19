@@ -68,7 +68,7 @@ func TestCompress(t *testing.T) {
 		t.Fatalf("Failed to seek in temp file: %v", err)
 	}
 
-	err = internal.Compress(tempFile)
+	err = internal.Compress(tempFile, "output")
 	if err != nil {
 		t.Fatalf("Compress function returned an error: %v", err)
 	}
