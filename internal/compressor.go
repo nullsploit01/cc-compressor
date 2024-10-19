@@ -80,9 +80,8 @@ func (c *Compressor) WriteHeader(outputFile *os.File, root *HuffmanNode) error {
 		return err
 	}
 
-	var treeBuilder strings.Builder
-	SerializeHuffmanTree(root, &treeBuilder)
-	treeData := treeBuilder.String()
+	var treeData []byte
+	SerializeHuffmanTree(root, &treeData)
 
 	treeLength := uint32(len(treeData))
 	err = binary.Write(outputFile, binary.LittleEndian, treeLength)
@@ -90,7 +89,7 @@ func (c *Compressor) WriteHeader(outputFile *os.File, root *HuffmanNode) error {
 		return err
 	}
 
-	_, err = outputFile.WriteString(treeData)
+	_, err = outputFile.Write(treeData)
 	if err != nil {
 		return err
 	}

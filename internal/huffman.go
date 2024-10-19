@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"container/heap"
 	"fmt"
-	"strings"
 )
 
 type HuffmanNode struct {
@@ -77,16 +76,16 @@ func GenerateHuffmanCodes(node *HuffmanNode, code string, codes map[string]strin
 	GenerateHuffmanCodes(node.Right, code+"1", codes)
 }
 
-func SerializeHuffmanTree(node *HuffmanNode, builder *strings.Builder) {
+func SerializeHuffmanTree(node *HuffmanNode, builder *[]byte) {
 	if node == nil {
 		return
 	}
 
 	if node.Left == nil && node.Right == nil {
-		builder.WriteString("0")
-		builder.WriteString(node.Character)
+		*builder = append(*builder, '0')
+		*builder = append(*builder, node.Character[0]) // Ensure it's one byte
 	} else {
-		builder.WriteString("1")
+		*builder = append(*builder, '1')
 	}
 
 	SerializeHuffmanTree(node.Left, builder)

@@ -118,24 +118,18 @@ func (d *DeCompressor) DecodeHuffmanData(inputFile *bufio.Reader, huffmanRoot *H
 			return nil, err
 		}
 
-		// Process each bit of the byte
 		for i := 7; i >= 0; i-- {
 			bit := (byteValue >> i) & 1
-			fmt.Printf("Processing bit: %d from byte: %08b\n", bit, byteValue) // Debug log
 
 			if bit == 1 {
 				currentNode = currentNode.Right
-				fmt.Println("Moved right")
 			} else {
 				currentNode = currentNode.Left
-				fmt.Println("Moved left")
 			}
 
-			// If we reach a leaf node, append the character
 			if currentNode.Left == nil && currentNode.Right == nil {
 				decodedData = append(decodedData, currentNode.Character[0])
-				fmt.Printf("Decoded character: %s\n", currentNode.Character) // Debug log
-				currentNode = huffmanRoot                                    // Reset to the root for the next character
+				currentNode = huffmanRoot // Reset to the root for the next character
 			}
 		}
 	}
